@@ -1,0 +1,20 @@
+Il passo successivo è quello di dividere i dati in Training set e Test set e per farlo utilizziamo
+la funzione train_test_split() al cui interno viene impostata la test_size ovvero la frazione
+di dataset che si vuole dare al Test set e in questo caso abbiamo impostato 0.2 quindi avremo
+una divisione Training set-80% e Test set-20%.
+
+Per la scelta dei modelli di classificazione, abbiamo deciso di utilizzarne 7 per vederne le
+differenze e quale si adattava meglio ai nostri dati, per questo utilizzeremo:
+
+Classificatori dal implementare:
+
+1) DecisionTreeClassifier
+2) LogisticRegression
+3) SVC (SUpport Vector Classifier)
+4) RandomForestClassifier
+5) AdaBoostClassifer
+6) GradientBoostingClassifier
+7) XGBoost
+8) LinearDiscriminantAnalysis
+
+Per trovare la migliore combinazione di iperparametri si è utilizzata la Grid Search.
