@@ -1,3 +1,4 @@
+# DECISION TREE CLASSIFIER SENZA GRID SEARCH
 '''
 DECISION TREE CLASSIFIER SENZA GRID SEARCH
 import pandas as pd
@@ -47,6 +48,7 @@ plt.show()
 
 '''
 
+# DECISION TREE CLASSIFIER CON GRID SEARCH
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
@@ -111,3 +113,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# Senza Grid Search: 82% Accuracy
+# Con Grid Search: 88.5% Accuracy

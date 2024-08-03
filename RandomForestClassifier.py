@@ -1,8 +1,8 @@
-# Logistic Regression Classifier Senza Grid Search
-'''
+# Random Forest CLASSIFIER SENZA GRID SEARCH
+
 import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -19,13 +19,11 @@ y = data['output']  # Target
 # Passo 3: Dividi i dati in set di addestramento e di test (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Crea il modello di regressione logistica
-model = LogisticRegression(max_iter=1000)  # max_iter è il numero massimo di iterazioni per l'algoritmo di ottimizzazione
-
-# Allena il modello
+# Passo 4: Crea e allena il modello RandomForestClassifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
-# Predici le etichette sui dati di test
+# Passo 5: Predici le etichette sui dati di test
 y_pred = model.predict(X_test)
 
 # Calcola l'accuratezza
@@ -35,10 +33,9 @@ print(f'Accuratezza: {accuracy:.2f}')
 # Visualizza il report di classificazione
 print(classification_report(y_test, y_pred))
 
-# Calcola la matrice di confusione
+# Passo 6: Calcola e visualizza la matrice di confusione
 conf_matrix = confusion_matrix(y_test, y_pred)
 
-# Passo 8: Visualizza la matrice di confusione
 plt.figure(figsize=(8, 6))
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
             xticklabels=['Class 0', 'Class 1'], 
@@ -48,15 +45,22 @@ plt.ylabel('True Labels')
 plt.title('Confusion Matrix')
 plt.show()
 
-# Salva il modello in un file
-model_filename = 'logistic_regression_model.pkl'
+# Passo 7: Salva il modello in un file
+model_filename = 'random_forest_model.pkl'
 joblib.dump(model, model_filename)
-'''
+print(f"Modello salvato come {model_filename}")
 
-# Logistic Regression Classifier Con Grid Search
+# (Opzionale) Carica il modello per verificare che funzioni
+loaded_model = joblib.load(model_filename)
+y_pred_loaded = loaded_model.predict(X_test)
+print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
+
+
+# Random Forest CLASSIFIER Con GRID SEARCH
+'''
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -75,14 +79,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Passo 4: Definisci la griglia di iperparametri
 param_grid = {
-    'C': [0.1, 1, 10, 100],  # Inverse of regularization strength
-    'solver': ['newton-cg', 'lbfgs', 'liblinear'],  # Algoritmi di ottimizzazione
-    'penalty': ['l2'],  # Norm used in the penalization
-    'max_iter': [100, 200, 300]  # Numero massimo di iterazioni
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'bootstrap': [True, False]
 }
 
 # Passo 5: Configura la Grid Search
-model = LogisticRegression()
+model = RandomForestClassifier(random_state=42)
 grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
 
 # Passo 6: Allena la Grid Search
@@ -102,10 +107,9 @@ print(f'Accuratezza: {accuracy:.2f}')
 # Visualizza il report di classificazione
 print(classification_report(y_test, y_pred))
 
-# Calcola la matrice di confusione
+# Passo 9: Calcola e visualizza la matrice di confusione
 conf_matrix = confusion_matrix(y_test, y_pred)
 
-# Passo 9: Visualizza la matrice di confusione
 plt.figure(figsize=(8, 6))
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
             xticklabels=['Class 0', 'Class 1'], 
@@ -115,8 +119,8 @@ plt.ylabel('True Labels')
 plt.title('Confusion Matrix')
 plt.show()
 
-# Passo 10: Salva il modello in un file
-model_filename = 'best_logistic_regression_model.pkl'
+# Passo 10: Salva il miglior modello in un file
+model_filename = 'best_random_forest_model.pkl'
 joblib.dump(best_model, model_filename)
 print(f"Modello salvato come {model_filename}")
 
@@ -124,7 +128,7 @@ print(f"Modello salvato come {model_filename}")
 loaded_model = joblib.load(model_filename)
 y_pred_loaded = loaded_model.predict(X_test)
 print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
+'''
 
-
-# Senza Grid Search: 89% Accuracy
-# Con Grid Search: 87% Accuracy
+# Senza Grid Search: 84% Accuracy
+# Con Grid Search: 80% Accuracy
