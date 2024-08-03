@@ -8,7 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Passo 1: Carica il dataset
-file_path = 'heart_new.csv'  # Cambia questo percorso con il percorso del tuo file CSV
+file_path = 'heart_new.csv'
 data = pd.read_csv(file_path)
 
 # Passo 2: Prepara i dati
@@ -57,7 +57,7 @@ import joblib  # Per salvare e caricare il modello
 
 def main():
     # Passo 1: Carica il dataset
-    file_path = 'heart_new.csv'  # Cambia questo percorso con il percorso del tuo file CSV
+    file_path = 'heart_new.csv' 
     data = pd.read_csv(file_path)
 
     # Passo 2: Prepara i dati

@@ -8,8 +8,8 @@ differenze e quale si adattava meglio ai nostri dati, per questo utilizzeremo:
 
 Classificatori dal implementare:
 
-1) DecisionTreeClassifier
-2) LogisticRegression
+1) DecisionTreeClassifier  (FATTO STANDARD E GRID SEARCH)
+2) LogisticRegression  (FATTO STANDARD)
 3) SVC (SUpport Vector Classifier)
 4) RandomForestClassifier
 5) AdaBoostClassifer
