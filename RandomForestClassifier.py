@@ -1,5 +1,5 @@
 # Random Forest CLASSIFIER SENZA GRID SEARCH
-
+'''
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -54,10 +54,10 @@ print(f"Modello salvato come {model_filename}")
 loaded_model = joblib.load(model_filename)
 y_pred_loaded = loaded_model.predict(X_test)
 print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
-
+'''
 
 # Random Forest CLASSIFIER Con GRID SEARCH
-'''
+
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -128,7 +128,7 @@ print(f"Modello salvato come {model_filename}")
 loaded_model = joblib.load(model_filename)
 y_pred_loaded = loaded_model.predict(X_test)
 print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
-'''
+
 
 # Senza Grid Search: 84% Accuracy
 # Con Grid Search: 80% Accuracy

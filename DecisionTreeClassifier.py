@@ -1,12 +1,13 @@
 # DECISION TREE CLASSIFIER SENZA GRID SEARCH
-'''
-DECISION TREE CLASSIFIER SENZA GRID SEARCH
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+import joblib  # Per salvare e caricare il modello
+
 
 # Passo 1: Carica il dataset
 file_path = 'heart_new.csv'
@@ -46,9 +47,18 @@ plt.ylabel('True Labels')
 plt.title('Confusion Matrix')
 plt.show()
 
-'''
+# Passo 7: Salva il modello in un file
+model_filename = 'decision_tree_model.pkl'
+joblib.dump(model, model_filename)
+print(f"Modello salvato come {model_filename}")
+
+# (Opzionale) Carica il modello per verificare che funzioni
+loaded_model = joblib.load(model_filename)
+y_pred_loaded = loaded_model.predict(X_test)
+print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
 
 # DECISION TREE CLASSIFIER CON GRID SEARCH
+'''
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
@@ -113,6 +123,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+'''
 # Senza Grid Search: 82% Accuracy
 # Con Grid Search: 88.5% Accuracy
