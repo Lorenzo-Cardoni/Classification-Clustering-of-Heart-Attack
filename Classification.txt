@@ -12,9 +12,9 @@ Classificatori dal implementare:
 2) LogisticRegression  (FATTO STANDARD E GRID SEARCH)
 3) SVC (SUpport Vector Classifier) (FATTO STANDARD E GRID SEARCH)
 4) RandomForestClassifier (FATTO STANDARD E GRID SEARCH)
-5) AdaBoostClassifer
-6) GradientBoostingClassifier
+5) AdaBoostClassifer (FATTO STANDARD E GRID SEARCH)
+6) GradientBoostingClassifier (FATTO STANDARD E GRID SEARCH)
 7) XGBoost
-8) LinearDiscriminantAnalysis
+8) LinearDiscriminantAnalysis (FATTO STANDARD E GRID SEARCH)
 
 Per trovare la migliore combinazione di iperparametri si è utilizzata la Grid Search.
