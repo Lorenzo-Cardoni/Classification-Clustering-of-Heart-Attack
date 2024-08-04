@@ -14,7 +14,7 @@ Classificatori dal implementare:
 4) RandomForestClassifier (FATTO STANDARD E GRID SEARCH)
 5) AdaBoostClassifer (FATTO STANDARD E GRID SEARCH)
 6) GradientBoostingClassifier (FATTO STANDARD E GRID SEARCH)
-7) XGBoost
+7) XGBoost (FATTO STANDARD E GRID SEARCH)
 8) LinearDiscriminantAnalysis (FATTO STANDARD E GRID SEARCH)
 
 Per trovare la migliore combinazione di iperparametri si è utilizzata la Grid Search.
