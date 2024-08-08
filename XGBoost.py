@@ -1,5 +1,5 @@
 # XGBoost senza Grid Search
-'''
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
@@ -54,7 +54,7 @@ print(f"Modello salvato come {model_filename}")
 loaded_model = joblib.load(model_filename)
 y_pred_loaded = loaded_model.predict(X_test)
 print(f'Accuratezza del modello caricato: {accuracy_score(y_test, y_pred_loaded):.2f}')
-'''
+
 
 # XGBoost con Grid Search
 

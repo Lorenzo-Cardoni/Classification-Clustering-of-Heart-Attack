@@ -1,5 +1,5 @@
 # Logistic Regression Classifier Senza Grid Search
-'''
+
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression
@@ -51,7 +51,7 @@ plt.show()
 # Salva il modello in un file
 model_filename = 'logistic_regression_model.pkl'
 joblib.dump(model, model_filename)
-'''
+
 
 # Logistic Regression Classifier Con Grid Search
 import pandas as pd

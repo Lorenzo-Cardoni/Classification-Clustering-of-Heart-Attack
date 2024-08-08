@@ -1,5 +1,5 @@
 # SVC senza Grid Search
-'''
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
@@ -54,7 +54,6 @@ plt.xlabel('Predicted Labels')
 plt.ylabel('True Labels')
 plt.title('Confusion Matrix')
 plt.show()
-'''
 
 # SVC con Grid Search 
 import pandas as pd
