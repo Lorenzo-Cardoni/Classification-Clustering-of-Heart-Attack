@@ -30,22 +30,15 @@ def save_confusion_matrix(y_test, y_pred, file_name, title):
     plt.title(title + ' Confusion Matrix')
     plt.xlabel('Predicted Labels')
     plt.ylabel('True Labels')
-    plt.savefig('confusion_matrix/' + file_name, bbox_inches='tight')
-    plt.show()
+    plt.savefig('confusion_matrix_gridsearch/' + file_name, bbox_inches='tight')
+    #plt.show()
 
 
 # Classificatori 
 def decision_tree():
     decision_tree = DecisionTreeClassifier()
-    param_grid = {
-        'max_depth': [3, 5, 7, 10],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4]
-    }
-    grid_search = GridSearchCV(estimator=decision_tree, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1)
-    grid_search.fit(X_train, y_train)
-    best_model = grid_search.best_estimator_
-    y_pred = best_model.predict(X_test)
+    decision_tree.fit(X_train, y_train)
+    y_pred_dt = decision_tree.predict(X_test)
     save_confusion_matrix(y_test, y_pred_dt, 'DecisionTree.png', 'Decision Tree Classifier')
     dt_dict = dict(zip(X_train.columns, decision_tree.feature_importances_))
     return y_pred_dt, dt_dict
@@ -59,7 +52,7 @@ def random_forest():
     return y_pred_rf, rf_dict
 
 def svc():
-    svc = SVC(random_state=42)
+    svc = SVC(kernel='linear', random_state=42)
     svc.fit(X_train, y_train)
     y_pred_svc = svc.predict(X_test)
     save_confusion_matrix(y_test, y_pred_svc, 'SVC.png', 'Support Vector Classifier')
@@ -73,11 +66,11 @@ def logistic_regression():
     return y_pred_lr
 
 def xgboost():
-    xgboost = XGBClassifier(random_state=42)
+    xgboost = XGBClassifier(random_state=42, eval_metric='logloss')
     xgboost.fit(X_train, y_train)
     y_pred_xgb = xgboost.predict(X_test)
     save_confusion_matrix(y_test, y_pred_xgb, 'XGBoost.png', 'XGBoost Classifier')
-    xg_dict = dict(zip(X_train.columns, xgboost.feature_importances_))
+    xg_dict = dict(zip(X_train.columns, xgboost.feature_importances_)) 
     return y_pred_xgb, xg_dict
 
 def adaboost():
@@ -96,6 +89,13 @@ def gradient_boosting():
     gb_dict = dict(zip(X_train.columns, gradient_boosting.feature_importances_))
     return y_pred_gb, gb_dict
 
+def linear_discriminant():
+    linear_discriminant = LinearDiscriminantAnalysis()
+    linear_discriminant.fit(X_train, y_train)
+    y_pred_ld = linear_discriminant.predict(X_test)
+    save_confusion_matrix(y_test, y_pred_ld, 'LinearDiscriminant.png', 'Linear Discriminant Analysis')
+    return y_pred_ld
+
 # Esegui i modelli
 y_pred_dt, dt_dict = decision_tree()
 y_pred_rf, rf_dict = random_forest()
@@ -104,6 +104,7 @@ y_pred_lr = logistic_regression()
 y_pred_xgb, xg_dict = xgboost()
 y_pred_ab, ab_dict = adaboost()
 y_pred_gb, gb_dict = gradient_boosting()
+y_pred_ld = linear_discriminant()
 
 # heatmap feature importances
 d = {'Random Forest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
@@ -116,7 +117,7 @@ d = {'Random Forest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
 feature_importance = pd.DataFrame(d)
 sns.heatmap(feature_importance, cmap="crest")
 plt.title('Feature importance by model')
-plt.savefig('plots/Heatmap', bbox_inches='tight')
+plt.savefig('plots_gridsearch/Heatmap', bbox_inches='tight')
 plt.show()
 
 # comparisons
@@ -128,29 +129,30 @@ ax2 = sns.lineplot(x=y_test, y=y_pred_ab, label='AdaBoost')
 ax.set_xlabel('y_test', color='g')
 ax.set_ylabel('y_pred', color='g')
 plt.title('Comparison between models')
-plt.savefig('plots/Comparison', bbox_inches='tight')
+plt.savefig('plots_gridsearch/Comparison', bbox_inches='tight')
 plt.show()
 
 # Plot accuracy
 def plot_accuracy_bar():
-    models = ['Decision Tree', 'Random Forest', 'Support Vector Machine', 'Logistic Regression', 'XGBoost', 'AdaBoost', 'Gradient Boosting']
+    models = ['Decision Tree', 'Random Forest', 'SVC', 'Logistic Regression', 'XGBoost', 'AdaBoost', 'Gradient Boosting', 'LinearDiscriminant']
     accuracies = [accuracy_score(y_test, y_pred_dt), accuracy_score(y_test, y_pred_rf), accuracy_score(y_test, y_pred_svc),
-                  accuracy_score(y_test, y_pred_lr), accuracy_score(y_test, y_pred_xgb), accuracy_score(y_test, y_pred_ab), accuracy_score(y_test, y_pred_gb)]
+                  accuracy_score(y_test, y_pred_lr), accuracy_score(y_test, y_pred_xgb), accuracy_score(y_test, y_pred_ab), 
+                  accuracy_score(y_test, y_pred_gb), accuracy_score(y_test, y_pred_ld)]
 
-    color = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f']
+    color = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00']
     plt.bar(models, accuracies, color=color)
     plt.xlabel('Classifier')
     plt.ylabel('Accuracy')
-    plt.xticks(rotation=90)
+    #plt.xticks(rotation=90)
     plt.title('Classifier Accuracy Comparison')
     plt.ylim([0, 1])  # Assuming accuracy values are between 0 and 1
-    plt.savefig('plots/Accuracy', bbox_inches='tight')
+    plt.savefig('plots_gridsearch/Accuracy', bbox_inches='tight')
     plt.show()
 
 plot_accuracy_bar()
 
 # Writing result in output file
-output_file_path = 'results.txt'
+output_file_path = 'results_gridsearch.txt'
 with open(output_file_path, 'w') as f:
     f.write('\n<------------------------------------- Test Accuracy ------------------------------------->\n\n')
     f.write(f'Decision Tree Classifier: {accuracy_score(y_test, y_pred_dt)}\n')
@@ -160,6 +162,7 @@ with open(output_file_path, 'w') as f:
     f.write(f'XGBoost Classifier: {accuracy_score(y_test, y_pred_xgb)}\n')
     f.write(f'AdaBoost Classifier: {accuracy_score(y_test, y_pred_ab)}\n')
     f.write(f'Gradient Boosting Classifier: {accuracy_score(y_test, y_pred_gb)}\n')
+    f.write(f'LinearDiscriminant: {accuracy_score(y_test, y_pred_ld)}\n')
 
     f.write('\n<------------------------------------- Classification Report ------------------------------------->\n\n')
     f.write(f'Decision Tree Classifier:\n{classification_report(y_test, y_pred_dt)}\n')
@@ -169,3 +172,4 @@ with open(output_file_path, 'w') as f:
     f.write(f'XGBoost Classifier:\n{classification_report(y_test, y_pred_xgb)}\n')
     f.write(f'AdaBoost Classifier:\n{classification_report(y_test, y_pred_ab)}\n')
     f.write(f'Gradient Boosting Classifier:\n{classification_report(y_test, y_pred_gb)}\n')
+    f.write(f'LinearDiscriminant:\n{classification_report(y_test, y_pred_ld)}\n')

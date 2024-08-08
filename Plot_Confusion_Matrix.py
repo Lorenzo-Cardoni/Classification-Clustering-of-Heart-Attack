@@ -2,6 +2,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 # Percorso della directory con le matrici di confusione salvate
+'''
 image_files = [
     'confusion_matrix/AdaBoost.png',
     'confusion_matrix/DecisionTree.png',
@@ -11,6 +12,17 @@ image_files = [
     'confusion_matrix/RandomForest.png',
     'confusion_matrix/SVC.png',
     'confusion_matrix/XGBoost.png',
+]
+'''
+image_files = [
+    'confusion_matrix_gridsearch/AdaBoost.png',
+    'confusion_matrix_gridsearch/DecisionTree.png',
+    'confusion_matrix_gridsearch/GradientBoosting.png',
+    'confusion_matrix_gridsearch/LinearDiscriminant.png',
+    'confusion_matrix_gridsearch/LogisticRegression.png',
+    'confusion_matrix_gridsearch/RandomForest.png',
+    'confusion_matrix_gridsearch/SVC.png',
+    'confusion_matrix_gridsearch/XGBoost.png',
 ]
 
 # Carica le immagini e ottieni le loro dimensioni
@@ -35,7 +47,8 @@ for i, img in enumerate(images):
         y_offset += img.height
 
 # Salva l'immagine combinata
-new_image.save('confusion_matrix\Combined_Confusion_Matrices.png')
+#new_image.save('confusion_matrix\Combined_Confusion_Matrices.png')
+new_image.save('confusion_matrix_gridsearch\Combined_Confusion_Matrices.png')
 
 # Mostra l'immagine combinata
 plt.imshow(new_image)
