@@ -37,74 +37,145 @@ def save_confusion_matrix(y_test, y_pred, file_name, title):
 # Classificatori 
 def decision_tree():
     decision_tree = DecisionTreeClassifier()
-    decision_tree.fit(X_train, y_train)
-    y_pred_dt = decision_tree.predict(X_test)
+    param_grid = {
+        'max_depth': [3, 5, 7, 10],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    }
+    grid_search = GridSearchCV(estimator=decision_tree, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+    best_params_dt = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_dt = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_dt, 'DecisionTree.png', 'Decision Tree Classifier')
-    dt_dict = dict(zip(X_train.columns, decision_tree.feature_importances_))
-    return y_pred_dt, dt_dict
+    dt_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    return y_pred_dt, dt_dict, best_params_dt
 
 def random_forest():
     random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
-    random_forest.fit(X_train, y_train)
-    y_pred_rf = random_forest.predict(X_test)
+    param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'bootstrap': [True, False]
+    }
+    grid_search = GridSearchCV(estimator=random_forest, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_rf = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_rf = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_rf, 'RandomForest.png', 'Random Forest Classifier')
-    rf_dict = dict(zip(X_train.columns, random_forest.feature_importances_))
-    return y_pred_rf, rf_dict
+    rf_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    return y_pred_rf, rf_dict, best_params_rf
 
 def svc():
-    svc = SVC(kernel='linear', random_state=42)
-    svc.fit(X_train, y_train)
-    y_pred_svc = svc.predict(X_test)
+    svc = SVC(random_state=42)
+    param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': ['scale', 'auto'],
+    'kernel': ['linear', 'rbf', 'sigmoid']
+    }
+    grid_search = GridSearchCV(estimator=svc, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_svc = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_svc = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_svc, 'SVC.png', 'Support Vector Classifier')
-    return y_pred_svc
+    return y_pred_svc, best_params_svc
 
 def logistic_regression():
     logistic_regression = LogisticRegression(max_iter=1000, random_state=42)
-    logistic_regression.fit(X_train, y_train)
-    y_pred_lr = logistic_regression.predict(X_test)
+    param_grid = {
+    'C': [0.1, 1, 10, 100],  # Inverse of regularization strength
+    'solver': ['newton-cg', 'lbfgs', 'liblinear'],  # Algoritmi di ottimizzazione
+    'penalty': ['l2'],  # Norm used in the penalization
+    'max_iter': [100, 200, 300]  # Numero massimo di iterazioni
+    }
+    grid_search = GridSearchCV(estimator=logistic_regression, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_lr = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_lr = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_lr, 'LogisticRegression.png', 'Logistic Regression')
-    return y_pred_lr
+    return y_pred_lr, best_params_lr
 
 def xgboost():
     xgboost = XGBClassifier(random_state=42, eval_metric='logloss')
-    xgboost.fit(X_train, y_train)
-    y_pred_xgb = xgboost.predict(X_test)
+    param_grid = {
+    'n_estimators': [50, 100, 150],
+    'learning_rate': [0.01, 0.1, 0.2],
+    'max_depth': [3, 5, 7],
+    'subsample': [0.6, 0.8, 1.0]
+    }
+    grid_search = GridSearchCV(estimator=xgboost, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_xgb = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_xgb = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_xgb, 'XGBoost.png', 'XGBoost Classifier')
-    xg_dict = dict(zip(X_train.columns, xgboost.feature_importances_)) 
-    return y_pred_xgb, xg_dict
+    xg_dict = dict(zip(X_train.columns, best_model.feature_importances_)) 
+    return y_pred_xgb, xg_dict, best_params_xgb
 
 def adaboost():
     adaboost = AdaBoostClassifier(random_state=42)
-    adaboost.fit(X_train, y_train)
-    y_pred_ab = adaboost.predict(X_test)
+    param_grid = {
+    'n_estimators': [50, 100, 200],
+    'learning_rate': [0.01, 0.1, 1.0]
+    }
+    grid_search = GridSearchCV(estimator=adaboost, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_ab = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_ab = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ab, 'AdaBoost.png', 'AdaBoost Classifier')
-    ab_dict = dict(zip(X_train.columns, adaboost.feature_importances_))
-    return y_pred_ab, ab_dict
+    ab_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    return y_pred_ab, ab_dict, best_params_ab
 
 def gradient_boosting():
     gradient_boosting = GradientBoostingClassifier(random_state=42)
-    gradient_boosting.fit(X_train, y_train)
-    y_pred_gb = gradient_boosting.predict(X_test)
+    param_grid = {
+    'n_estimators': [50, 100, 200],
+    'learning_rate': [0.01, 0.1, 1.0],
+    'max_depth': [3, 4, 5]
+    }
+    grid_search = GridSearchCV(estimator=gradient_boosting, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_gb = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_gb = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_gb, 'GradientBoosting.png', 'Gradient Boosting Classifier')
-    gb_dict = dict(zip(X_train.columns, gradient_boosting.feature_importances_))
-    return y_pred_gb, gb_dict
+    gb_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    return y_pred_gb, gb_dict, best_params_gb
 
 def linear_discriminant():
     linear_discriminant = LinearDiscriminantAnalysis()
-    linear_discriminant.fit(X_train, y_train)
-    y_pred_ld = linear_discriminant.predict(X_test)
+    param_grid = [
+    {
+        'solver': ['svd'],  # 'svd' does not support shrinkage
+    },
+    {
+        'solver': ['lsqr', 'eigen'],  # 'lsqr' and 'eigen' support shrinkage
+        'shrinkage': ['auto', None],
+    }
+]
+    grid_search = GridSearchCV(estimator=linear_discriminant, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    best_params_ld = grid_search.best_params_
+    best_model = grid_search.best_estimator_
+    y_pred_ld = best_model.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ld, 'LinearDiscriminant.png', 'Linear Discriminant Analysis')
-    return y_pred_ld
+    return y_pred_ld, best_params_ld
 
 # Esegui i modelli
-y_pred_dt, dt_dict = decision_tree()
-y_pred_rf, rf_dict = random_forest()
-y_pred_svc = svc()
-y_pred_lr = logistic_regression()
-y_pred_xgb, xg_dict = xgboost()
-y_pred_ab, ab_dict = adaboost()
-y_pred_gb, gb_dict = gradient_boosting()
-y_pred_ld = linear_discriminant()
+y_pred_dt, dt_dict, best_params_dt = decision_tree()
+y_pred_rf, rf_dict, best_params_rf = random_forest()
+y_pred_svc, best_params_svc = svc()
+y_pred_lr, best_params_lr = logistic_regression()
+y_pred_xgb, xg_dict, best_params_xgb = xgboost()
+y_pred_ab, ab_dict, best_params_ab = adaboost()
+y_pred_gb, gb_dict, best_params_gb = gradient_boosting()
+y_pred_ld, best_params_ld = linear_discriminant()
 
 # heatmap feature importances
 d = {'Random Forest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
@@ -173,3 +244,18 @@ with open(output_file_path, 'w') as f:
     f.write(f'AdaBoost Classifier:\n{classification_report(y_test, y_pred_ab)}\n')
     f.write(f'Gradient Boosting Classifier:\n{classification_report(y_test, y_pred_gb)}\n')
     f.write(f'LinearDiscriminant:\n{classification_report(y_test, y_pred_ld)}\n')
+
+    f.write('\n<------------------------------------- Best Iperparameters ------------------------------------->\n\n')
+    f.write(f'Decision Tree Classifier: {best_params_dt}\n')
+    f.write(f'Random Forest Classifier: {best_params_rf}\n')
+    f.write(f'Support Vector Machine Classifier: {best_params_svc}\n')
+    f.write(f'Logistic Regression: {best_params_lr}\n')
+    f.write(f'XGBoost Classifier: {best_params_xgb}\n')
+    f.write(f'AdaBoost Classifier: {best_params_ab}\n')
+    f.write(f'Gradient Boosting Classifier: {best_params_gb}\n')
+    f.write(f'LinearDiscriminant: {best_params_ld}\n')
+
+
+
+
+
