@@ -78,24 +78,27 @@ def silhouette_analysis(range_n_clusters, X):
 
 
 # Funzione per applicare il metodo del gomito utilizzando diverse metriche
-def elbow_method(X):
-    model = KMeans()
-    
+def elbow_method(X):    
     # Visualizzazione con la metrica 'distortion'
+    model = KMeans()
     visualizer1 = KElbowVisualizer(model, k=(3, 10), metric='distortion')
     visualizer1.fit(X)
     visualizer1.show(outpath="grafici/kelbow_distortion.png")
+    plt.close()
 
     # Visualizzazione con la metrica 'calinski_harabasz'
+    model = KMeans()
     visualizer2 = KElbowVisualizer(model, k=(3, 10), metric='calinski_harabasz')
     visualizer2.fit(X)
     visualizer2.show(outpath="grafici/kelbow_calinksi.png")
+    plt.close()
 
     # Visualizzazione con la metrica 'silhouette'
+    model = KMeans()
     visualizer3 = KElbowVisualizer(model, k=(3, 9), metric='silhouette')
     visualizer3.fit(X)
     visualizer3.show(outpath="grafici/kelbow_silhouette.png")
-
+    plt.close()
 
 # Funzione per eseguire il benchmarking del K-means con diverse inizializzazioni
 def bench_k_means(kmeans, name, data, labels):
@@ -184,4 +187,4 @@ plt.savefig('grafici/kmeans.png', bbox_inches='tight')
 plt.show()
 
 # Esecuzione dell'analisi silhouette per visualizzare come si distribuiscono i cluster
-silhouette_analysis([2], data_reduced)
+silhouette_analysis(range(2,5), data_reduced)
