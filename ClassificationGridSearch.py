@@ -191,18 +191,6 @@ plt.title('Feature importance by model')
 plt.savefig('plots_gridsearch/Heatmap', bbox_inches='tight')
 plt.show()
 
-# comparisons
-fig, ax = plt.subplots(figsize=(11, 3))
-ax = sns.lineplot(x=y_test, y=y_pred_xgb, label='XGBoost')
-ax1 = sns.lineplot(x=y_test, y=y_pred_gb, label='GradientBoosting')
-ax2 = sns.lineplot(x=y_test, y=y_pred_ab, label='AdaBoost')
-
-ax.set_xlabel('y_test', color='g')
-ax.set_ylabel('y_pred', color='g')
-plt.title('Comparison between models')
-plt.savefig('plots_gridsearch/Comparison', bbox_inches='tight')
-plt.show()
-
 # Plot accuracy
 def plot_accuracy_bar():
     models = ['Decision Tree', 'Random Forest', 'SVC', 'Logistic Regression', 'XGBoost', 'AdaBoost', 'Gradient Boosting', 'LinearDiscriminant']
@@ -214,7 +202,7 @@ def plot_accuracy_bar():
     plt.bar(models, accuracies, color=color)
     plt.xlabel('Classifier')
     plt.ylabel('Accuracy')
-    #plt.xticks(rotation=90)
+    plt.xticks(rotation=90)
     plt.title('Classifier Accuracy Comparison')
     plt.ylim([0, 1])  # Assuming accuracy values are between 0 and 1
     plt.savefig('plots_gridsearch/Accuracy', bbox_inches='tight')
