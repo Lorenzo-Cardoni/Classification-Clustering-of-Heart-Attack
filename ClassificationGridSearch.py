@@ -45,28 +45,26 @@ def decision_tree():
     grid_search = GridSearchCV(estimator=decision_tree, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1)
     grid_search.fit(X_train, y_train)
     best_params_dt = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_dt = best_model.predict(X_test)
+    y_pred_dt = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_dt, 'DecisionTree.png', 'Decision Tree Classifier')
-    dt_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    dt_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     return y_pred_dt, dt_dict, best_params_dt
 
 def random_forest():
     random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
     param_grid = {
-    'n_estimators': [100, 200, 300],
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4],
-    'bootstrap': [True, False]
+        'n_estimators': [50, 100, 200],
+        'max_features': ['auto', 'sqrt', 'log2'],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
     }
     grid_search = GridSearchCV(estimator=random_forest, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_rf = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_rf = best_model.predict(X_test)
+    y_pred_rf = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_rf, 'RandomForest.png', 'Random Forest Classifier')
-    rf_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    rf_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     return y_pred_rf, rf_dict, best_params_rf
 
 def svc():
@@ -79,24 +77,23 @@ def svc():
     grid_search = GridSearchCV(estimator=svc, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_svc = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_svc = best_model.predict(X_test)
+    y_pred_svc = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_svc, 'SVC.png', 'Support Vector Classifier')
     return y_pred_svc, best_params_svc
 
 def logistic_regression():
     logistic_regression = LogisticRegression(max_iter=1000, random_state=42)
-    param_grid = {
-    'C': [0.1, 1, 10, 100],  # Inverse of regularization strength
-    'solver': ['newton-cg', 'lbfgs', 'liblinear'],  # Algoritmi di ottimizzazione
-    'penalty': ['l2'],  # Norm used in the penalization
-    'max_iter': [100, 200, 300]  # Numero massimo di iterazioni
-    }
-    grid_search = GridSearchCV(estimator=logistic_regression, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    parameters = [{'penalty': ['l2', 'none']},
+                  {'C': [1, 10, 100, 1000]},
+                  {'max_iter': [100, 150, 200]},
+                  {'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}]
+    grid_search = GridSearchCV(estimator=logistic_regression,
+                           param_grid=parameters,
+                           scoring='accuracy',
+                           verbose=3)
     grid_search.fit(X_train, y_train)
     best_params_lr = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_lr = best_model.predict(X_test)
+    y_pred_lr = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_lr, 'LogisticRegression.png', 'Logistic Regression')
     return y_pred_lr, best_params_lr
 
@@ -111,10 +108,9 @@ def xgboost():
     grid_search = GridSearchCV(estimator=xgboost, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_xgb = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_xgb = best_model.predict(X_test)
+    y_pred_xgb = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_xgb, 'XGBoost.png', 'XGBoost Classifier')
-    xg_dict = dict(zip(X_train.columns, best_model.feature_importances_)) 
+    xg_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_)) 
     return y_pred_xgb, xg_dict, best_params_xgb
 
 def adaboost():
@@ -126,10 +122,9 @@ def adaboost():
     grid_search = GridSearchCV(estimator=adaboost, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_ab = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_ab = best_model.predict(X_test)
+    y_pred_ab = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ab, 'AdaBoost.png', 'AdaBoost Classifier')
-    ab_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    ab_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     return y_pred_ab, ab_dict, best_params_ab
 
 def gradient_boosting():
@@ -142,10 +137,9 @@ def gradient_boosting():
     grid_search = GridSearchCV(estimator=gradient_boosting, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_gb = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_gb = best_model.predict(X_test)
+    y_pred_gb = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_gb, 'GradientBoosting.png', 'Gradient Boosting Classifier')
-    gb_dict = dict(zip(X_train.columns, best_model.feature_importances_))
+    gb_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     return y_pred_gb, gb_dict, best_params_gb
 
 def linear_discriminant():
@@ -162,8 +156,7 @@ def linear_discriminant():
     grid_search = GridSearchCV(estimator=linear_discriminant, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)
     best_params_ld = grid_search.best_params_
-    best_model = grid_search.best_estimator_
-    y_pred_ld = best_model.predict(X_test)
+    y_pred_ld = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ld, 'LinearDiscriminant.png', 'Linear Discriminant Analysis')
     return y_pred_ld, best_params_ld
 

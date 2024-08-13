@@ -101,6 +101,9 @@ def logistic_regression():
     y_pred_lr = logistic_regression.predict(X_test)
     save_confusion_matrix(y_test, y_pred_lr, 'LogisticRegression.png', 'Logistic Regression')
     save_learning_curve(logistic_regression)
+    # Ottieni i parametri predefiniti
+    params = logistic_regression.get_params()
+    print(params)
     return y_pred_lr
 
 def xgboost():

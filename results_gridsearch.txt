@@ -2,7 +2,7 @@
 <------------------------------------- Test Accuracy ------------------------------------->
 
 Decision Tree Classifier: 0.8524590163934426
-Random Forest Classifier: 0.8032786885245902
+Random Forest Classifier: 0.8524590163934426
 Support Vector Machine Classifier: 0.8688524590163934
 Logistic Regression: 0.8688524590163934
 XGBoost Classifier: 0.8688524590163934
@@ -25,12 +25,12 @@ weighted avg       0.86      0.85      0.85        61
 Random Forest Classifier:
               precision    recall  f1-score   support
 
-           0       0.77      0.83      0.80        29
-           1       0.83      0.78      0.81        32
+           0       0.83      0.86      0.85        29
+           1       0.87      0.84      0.86        32
 
-    accuracy                           0.80        61
-   macro avg       0.80      0.80      0.80        61
-weighted avg       0.81      0.80      0.80        61
+    accuracy                           0.85        61
+   macro avg       0.85      0.85      0.85        61
+weighted avg       0.85      0.85      0.85        61
 
 Support Vector Machine Classifier:
               precision    recall  f1-score   support
@@ -96,9 +96,9 @@ weighted avg       0.87      0.87      0.87        61
 <------------------------------------- Best Iperparameters ------------------------------------->
 
 Decision Tree Classifier: {'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 10}
-Random Forest Classifier: {'bootstrap': False, 'max_depth': 10, 'min_samples_leaf': 2, 'min_samples_split': 5, 'n_estimators': 100}
+Random Forest Classifier: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 10, 'n_estimators': 50}
 Support Vector Machine Classifier: {'C': 100, 'gamma': 'scale', 'kernel': 'linear'}
-Logistic Regression: {'C': 1, 'max_iter': 200, 'penalty': 'l2', 'solver': 'lbfgs'}
+Logistic Regression: {'max_iter': 200}
 XGBoost Classifier: {'learning_rate': 0.2, 'max_depth': 7, 'n_estimators': 100, 'subsample': 0.8}
 AdaBoost Classifier: {'learning_rate': 0.01, 'n_estimators': 200}
 Gradient Boosting Classifier: {'learning_rate': 0.1, 'max_depth': 3, 'n_estimators': 100}
