@@ -1,5 +1,7 @@
 # Classificatori utilizzati come funzioni, ed in ognuno faccio lo standard e con grid search 
 import pandas as pd
+import numpy as np
+from sklearn.model_selection import learning_curve
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -31,16 +33,16 @@ def save_confusion_matrix(y_test, y_pred, file_name, title):
     plt.xlabel('Predicted Labels')
     plt.ylabel('True Labels')
     plt.savefig('confusion_matrix_gridsearch/' + file_name, bbox_inches='tight')
-    #plt.show()
+    plt.show()
 
 
 # Classificatori 
 def decision_tree():
     decision_tree = DecisionTreeClassifier()
     param_grid = {
-        'max_depth': [3, 5, 7, 10],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4]
+        'max_depth': [3, 5, 7, 10, 15, 20],
+        'min_samples_split': [2, 5, 10, 20],
+        'min_samples_leaf': [1, 2, 4, 6, 8],
     }
     grid_search = GridSearchCV(estimator=decision_tree, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=-1)
     grid_search.fit(X_train, y_train)
@@ -130,9 +132,9 @@ def adaboost():
 def gradient_boosting():
     gradient_boosting = GradientBoostingClassifier(random_state=42)
     param_grid = {
-    'n_estimators': [50, 100, 200],
-    'learning_rate': [0.01, 0.1, 1.0],
-    'max_depth': [3, 4, 5]
+    'n_estimators': [50, 100, 200, 300, 500],
+    'learning_rate': [0.01, 0.05, 0.1, 0.2],
+    'max_depth': [3, 4, 5, 6],
     }
     grid_search = GridSearchCV(estimator=gradient_boosting, param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
     grid_search.fit(X_train, y_train)

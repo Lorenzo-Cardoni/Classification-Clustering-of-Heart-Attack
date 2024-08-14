@@ -12,6 +12,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, roc_auc_score
 
 # Dataset
 file_path = 'heart_new.csv'
@@ -65,7 +66,7 @@ def save_confusion_matrix(y_test, y_pred, file_name, title):
     plt.xlabel('Predicted Labels')
     plt.ylabel('True Labels')
     plt.savefig('confusion_matrix/' + file_name, bbox_inches='tight')
-    #plt.show()
+    plt.show()
 
 
 # Classificatori 
@@ -152,10 +153,10 @@ y_pred_gb, gb_dict = gradient_boosting()
 y_pred_ld = linear_discriminant()
 
 # heatmap feature importances
-d = {'Random Forest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
-     'Decision Tree': pd.Series(dt_dict.values(), index=dt_dict.keys()),
+d = {'RandomForest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
+     'DecisionTree': pd.Series(dt_dict.values(), index=dt_dict.keys()),
      'AdaBoost': pd.Series(ab_dict.values(), index=ab_dict.keys()),
-     'Gradient Boosting': pd.Series(gb_dict.values(), index=gb_dict.keys()),
+     'GradientBoosting': pd.Series(gb_dict.values(), index=gb_dict.keys()),
      'XGBoost': pd.Series(xg_dict.values(), index=xg_dict.keys())
      }
 
@@ -167,7 +168,7 @@ plt.show()
 
 # Plot accuracy
 def plot_accuracy_bar():
-    models = ['Decision Tree', 'Random Forest', 'SVC', 'Logistic Regression', 'XGBoost', 'AdaBoost', 'Gradient Boosting', 'LinearDiscriminant']
+    models = ['DecisionTree', 'RandomForest', 'SVC', 'LogisticRegression', 'XGBoost', 'AdaBoost', 'GradientBoosting', 'LinearDiscriminant']
     accuracies = [accuracy_score(y_test, y_pred_dt), accuracy_score(y_test, y_pred_rf), accuracy_score(y_test, y_pred_svc),
                   accuracy_score(y_test, y_pred_lr), accuracy_score(y_test, y_pred_xgb), accuracy_score(y_test, y_pred_ab), 
                   accuracy_score(y_test, y_pred_gb), accuracy_score(y_test, y_pred_ld)]
@@ -206,3 +207,75 @@ with open(output_file_path, 'w') as f:
     f.write(f'AdaBoost Classifier:\n{classification_report(y_test, y_pred_ab)}\n')
     f.write(f'Gradient Boosting Classifier:\n{classification_report(y_test, y_pred_gb)}\n')
     f.write(f'LinearDiscriminant:\n{classification_report(y_test, y_pred_ld)}\n')
+
+
+# Funzione per tracciare la curva ROC
+def plot_roc_curve(fpr, tpr, roc_auc, model_name, ax):
+    ax.plot(fpr, tpr, label=f'{model_name} (AUC = {roc_auc:.2f})')
+
+# Funzione per calcolare e tracciare tutte le curve ROC in un'unica immagine
+def plot_all_roc_curves():
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Calcola e traccia la ROC per Decision Tree
+    dt_model = DecisionTreeClassifier().fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, dt_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, dt_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'Decision Tree', ax)
+
+    # Calcola e traccia la ROC per Random Forest
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=42).fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, rf_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, rf_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'Random Forest', ax)
+
+    # Calcola e traccia la ROC per SVC
+    svc_model = SVC(kernel='linear', random_state=42, probability=True).fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, svc_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, svc_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'SVC', ax)
+
+    # Calcola e traccia la ROC per Logistic Regression
+    lr_model = LogisticRegression(max_iter=1000, random_state=42).fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, lr_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, lr_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'Logistic Regression', ax)
+
+    # Calcola e traccia la ROC per XGBoost
+    xgb_model = XGBClassifier(random_state=42, eval_metric='logloss').fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, xgb_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, xgb_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'XGBoost', ax)
+
+    # Calcola e traccia la ROC per AdaBoost
+    ab_model = AdaBoostClassifier(random_state=42).fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, ab_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, ab_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'AdaBoost', ax)
+
+    # Calcola e traccia la ROC per Gradient Boosting
+    gb_model = GradientBoostingClassifier(random_state=42).fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, gb_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, gb_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'Gradient Boosting', ax)
+
+    # Calcola e traccia la ROC per Linear Discriminant
+    lda_model = LinearDiscriminantAnalysis().fit(X_train, y_train)
+    fpr, tpr, _ = roc_curve(y_test, lda_model.predict_proba(X_test)[:, 1])
+    roc_auc = roc_auc_score(y_test, lda_model.predict_proba(X_test)[:, 1])
+    plot_roc_curve(fpr, tpr, roc_auc, 'Linear Discriminant', ax)
+
+    # Configura il plot
+    ax.plot([0, 1], [0, 1], 'k--')
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_title('Receiver Operating Characteristic (ROC) Curves')
+    ax.legend(loc='lower right')
+
+    plt.savefig('plots/ROC_Curves.png', bbox_inches='tight')
+    plt.show()
+
+# Esegui il plot delle curve ROC
+plot_all_roc_curves()
