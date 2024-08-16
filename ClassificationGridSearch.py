@@ -9,7 +9,7 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier,
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, roc_auc_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -50,7 +50,8 @@ def decision_tree():
     y_pred_dt = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_dt, 'DecisionTree.png', 'Decision Tree Classifier')
     dt_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
-    return y_pred_dt, dt_dict, best_params_dt
+    proba_dt = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_dt, dt_dict, best_params_dt, proba_dt
 
 def random_forest():
     random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -67,10 +68,11 @@ def random_forest():
     y_pred_rf = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_rf, 'RandomForest.png', 'Random Forest Classifier')
     rf_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
-    return y_pred_rf, rf_dict, best_params_rf
+    proba_rf = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_rf, rf_dict, best_params_rf, proba_rf
 
 def svc():
-    svc = SVC(random_state=42)
+    svc = SVC(random_state=42, probability=True)
     param_grid = {
     'C': [0.1, 1, 10, 100],
     'gamma': ['scale', 'auto'],
@@ -81,7 +83,8 @@ def svc():
     best_params_svc = grid_search.best_params_
     y_pred_svc = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_svc, 'SVC.png', 'Support Vector Classifier')
-    return y_pred_svc, best_params_svc
+    proba_svc = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_svc, best_params_svc, proba_svc
 
 def logistic_regression():
     logistic_regression = LogisticRegression(max_iter=1000, random_state=42)
@@ -97,7 +100,8 @@ def logistic_regression():
     best_params_lr = grid_search.best_params_
     y_pred_lr = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_lr, 'LogisticRegression.png', 'Logistic Regression')
-    return y_pred_lr, best_params_lr
+    proba_lr = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_lr, best_params_lr, proba_lr
 
 def xgboost():
     xgboost = XGBClassifier(random_state=42, eval_metric='logloss')
@@ -113,7 +117,8 @@ def xgboost():
     y_pred_xgb = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_xgb, 'XGBoost.png', 'XGBoost Classifier')
     xg_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_)) 
-    return y_pred_xgb, xg_dict, best_params_xgb
+    proba_xgb = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_xgb, xg_dict, best_params_xgb, proba_xgb
 
 def adaboost():
     adaboost = AdaBoostClassifier(random_state=42)
@@ -127,7 +132,8 @@ def adaboost():
     y_pred_ab = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ab, 'AdaBoost.png', 'AdaBoost Classifier')
     ab_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
-    return y_pred_ab, ab_dict, best_params_ab
+    proba_ab = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_ab, ab_dict, best_params_ab, proba_ab
 
 def gradient_boosting():
     gradient_boosting = GradientBoostingClassifier(random_state=42)
@@ -142,7 +148,8 @@ def gradient_boosting():
     y_pred_gb = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_gb, 'GradientBoosting.png', 'Gradient Boosting Classifier')
     gb_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
-    return y_pred_gb, gb_dict, best_params_gb
+    proba_gb = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_gb, gb_dict, best_params_gb, proba_gb
 
 def linear_discriminant():
     linear_discriminant = LinearDiscriminantAnalysis()
@@ -160,17 +167,18 @@ def linear_discriminant():
     best_params_ld = grid_search.best_params_
     y_pred_ld = grid_search.predict(X_test)
     save_confusion_matrix(y_test, y_pred_ld, 'LinearDiscriminant.png', 'Linear Discriminant Analysis')
-    return y_pred_ld, best_params_ld
+    proba_ld = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    return y_pred_ld, best_params_ld, proba_ld
 
 # Esegui i modelli
-y_pred_dt, dt_dict, best_params_dt = decision_tree()
-y_pred_rf, rf_dict, best_params_rf = random_forest()
-y_pred_svc, best_params_svc = svc()
-y_pred_lr, best_params_lr = logistic_regression()
-y_pred_xgb, xg_dict, best_params_xgb = xgboost()
-y_pred_ab, ab_dict, best_params_ab = adaboost()
-y_pred_gb, gb_dict, best_params_gb = gradient_boosting()
-y_pred_ld, best_params_ld = linear_discriminant()
+y_pred_dt, dt_dict, best_params_dt, proba_dt = decision_tree()
+y_pred_rf, rf_dict, best_params_rf, proba_rf = random_forest()
+y_pred_svc, best_params_svc, proba_svc = svc()
+y_pred_lr, best_params_lr, proba_lr = logistic_regression()
+y_pred_xgb, xg_dict, best_params_xgb, proba_xgb = xgboost()
+y_pred_ab, ab_dict, best_params_ab, proba_ab = adaboost()
+y_pred_gb, gb_dict, best_params_gb, proba_gb = gradient_boosting()
+y_pred_ld, best_params_ld, proba_ld = linear_discriminant()
 
 # heatmap feature importances
 d = {'Random Forest': pd.Series(rf_dict.values(), index=rf_dict.keys()),
@@ -236,9 +244,37 @@ with open(output_file_path, 'w') as f:
     f.write(f'XGBoost Classifier: {best_params_xgb}\n')
     f.write(f'AdaBoost Classifier: {best_params_ab}\n')
     f.write(f'Gradient Boosting Classifier: {best_params_gb}\n')
-    f.write(f'LinearDiscriminant: {best_params_ld}\n')
+    f.write(f'LinearDiscriminant: {best_params_ld}\n') 
 
+# Funzione per plottare le curve ROC
+def plot_roc_curves():
+    plt.figure(figsize=(12, 8))
 
+    models = {
+        'Decision Tree': proba_dt,
+        'Random Forest': proba_rf,
+        'Support Vector Classifier': proba_svc,
+        'Logistic Regression': proba_lr,
+        'XGBoost': proba_xgb,
+        'AdaBoost': proba_ab,
+        'Gradient Boosting': proba_gb,
+        'Linear Discriminant Analysis': proba_ld
+    }
+
+    for name, proba in models.items():
+        fpr, tpr, _ = roc_curve(y_test, proba)
+        auc_score = roc_auc_score(y_test, proba)
+        plt.plot(fpr, tpr, label=f'{name} (AUC = {auc_score:.2f})')
+
+    plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve Comparison')
+    plt.legend(loc='lower right')
+    plt.savefig('plots_gridsearch/CurvaROCGridSearch.png')
+    plt.show()
+
+plot_roc_curves()
 
 
 

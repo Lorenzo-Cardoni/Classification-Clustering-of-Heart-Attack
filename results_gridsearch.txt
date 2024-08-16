@@ -95,7 +95,7 @@ weighted avg       0.87      0.87      0.87        61
 
 <------------------------------------- Best Iperparameters ------------------------------------->
 
-Decision Tree Classifier: {'max_depth': 5, 'min_samples_leaf': 8, 'min_samples_split': 2}
+Decision Tree Classifier: {'max_depth': 5, 'min_samples_leaf': 8, 'min_samples_split': 5}
 Random Forest Classifier: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 10, 'n_estimators': 50}
 Support Vector Machine Classifier: {'C': 100, 'gamma': 'scale', 'kernel': 'linear'}
 Logistic Regression: {'max_iter': 200}
