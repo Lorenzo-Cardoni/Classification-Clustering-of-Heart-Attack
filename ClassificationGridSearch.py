@@ -88,10 +88,16 @@ def svc():
 
 def logistic_regression():
     logistic_regression = LogisticRegression(max_iter=1000, random_state=42)
+    ''' 
     parameters = [{'penalty': ['l2', 'none']},
                   {'C': [1, 10, 100, 1000]},
                   {'max_iter': [100, 150, 200]},
                   {'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}]
+    '''
+    # Nuovi Parametri
+    parameters = [{'penalty': ['l2']},
+                  {'C': [1]},
+                  {'solver': ['lbfgs']}]
     grid_search = GridSearchCV(estimator=logistic_regression,
                            param_grid=parameters,
                            scoring='accuracy',

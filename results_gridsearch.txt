@@ -4,7 +4,7 @@
 Decision Tree Classifier: 0.8524590163934426
 Random Forest Classifier: 0.8524590163934426
 Support Vector Machine Classifier: 0.8688524590163934
-Logistic Regression: 0.8688524590163934
+Logistic Regression: 0.8852459016393442
 XGBoost Classifier: 0.8688524590163934
 AdaBoost Classifier: 0.8524590163934426
 Gradient Boosting Classifier: 0.8032786885245902
@@ -45,12 +45,12 @@ weighted avg       0.87      0.87      0.87        61
 Logistic Regression:
               precision    recall  f1-score   support
 
-           0       0.86      0.86      0.86        29
-           1       0.88      0.88      0.88        32
+           0       0.89      0.86      0.88        29
+           1       0.88      0.91      0.89        32
 
-    accuracy                           0.87        61
-   macro avg       0.87      0.87      0.87        61
-weighted avg       0.87      0.87      0.87        61
+    accuracy                           0.89        61
+   macro avg       0.89      0.88      0.88        61
+weighted avg       0.89      0.89      0.89        61
 
 XGBoost Classifier:
               precision    recall  f1-score   support
@@ -95,10 +95,10 @@ weighted avg       0.87      0.87      0.87        61
 
 <------------------------------------- Best Iperparameters ------------------------------------->
 
-Decision Tree Classifier: {'max_depth': 5, 'min_samples_leaf': 8, 'min_samples_split': 5}
+Decision Tree Classifier: {'max_depth': 5, 'min_samples_leaf': 8, 'min_samples_split': 20}
 Random Forest Classifier: {'max_depth': None, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 10, 'n_estimators': 50}
 Support Vector Machine Classifier: {'C': 100, 'gamma': 'scale', 'kernel': 'linear'}
-Logistic Regression: {'max_iter': 200}
+Logistic Regression: {'penalty': 'l2'}
 XGBoost Classifier: {'learning_rate': 0.2, 'max_depth': 7, 'n_estimators': 100, 'subsample': 0.8}
 AdaBoost Classifier: {'learning_rate': 0.01, 'n_estimators': 200}
 Gradient Boosting Classifier: {'learning_rate': 0.2, 'max_depth': 5, 'n_estimators': 50}

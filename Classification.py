@@ -104,6 +104,10 @@ def logistic_regression():
     save_learning_curve(logistic_regression)
     # Ottieni i parametri predefiniti
     params = logistic_regression.get_params()
+    # Scrivi i parametri in un file txt
+    with open('logistic_regression_params.txt', 'w') as f:
+        for key, value in params.items():
+            f.write(f'{key}: {value}\n')
     print(params)
     return y_pred_lr
 
