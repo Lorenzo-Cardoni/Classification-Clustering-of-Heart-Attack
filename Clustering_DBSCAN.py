@@ -3,9 +3,10 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn import metrics
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
+from sklearn.decomposition import PCA
 from kneed import KneeLocator
 
 def elbow_method(dataset, n_knn, config):
@@ -17,7 +18,7 @@ def elbow_method(dataset, n_knn, config):
 
     kl = KneeLocator(range(1, len(distances) + 1), distances, curve="convex")
     kl.plot_knee(figsize=(9, 6))
-    plt.savefig(f"grafici/elbow_dbscan_{config}.png", bbox_inches='tight')
+    plt.savefig(f"grafici_DBSCAN/elbow_dbscan_{config}.png", bbox_inches='tight')
     plt.show()
 
     return kl.elbow, kl.knee_y
@@ -27,13 +28,13 @@ def select_parameter(eps, dataset, config):
     min_samples_to_test = range(5, 50, 5)
 
     results_noise = pd.DataFrame(
-        data=np.zeros((len(eps_to_test), len(min_samples_to_test))),  # Empty dataframe
+        data=np.zeros((len(eps_to_test), len(min_samples_to_test))),
         columns=min_samples_to_test,
         index=eps_to_test
     )
 
     results_clusters = pd.DataFrame(
-        data=np.zeros((len(eps_to_test), len(min_samples_to_test))),  # Empty dataframe
+        data=np.zeros((len(eps_to_test), len(min_samples_to_test))),
         columns=min_samples_to_test,
         index=eps_to_test
     )
@@ -46,10 +47,8 @@ def select_parameter(eps, dataset, config):
     for e in eps_to_test:
         for min_samples in min_samples_to_test:
             iter_ += 1
-            # Calcolo le metriche
             noise_metric, cluster_metric = get_metrics(e, min_samples, dataset, iter_)
 
-            # Inserisco i risultati nei relativi dataframe
             results_noise.loc[e, min_samples] = noise_metric
             results_clusters.loc[e, min_samples] = cluster_metric
 
@@ -64,15 +63,13 @@ def select_parameter(eps, dataset, config):
     ax2.set_ylabel("EPSILON")
 
     plt.tight_layout()
-    plt.savefig(f"grafici/parametri_dbscan_{config}.png", bbox_inches='tight')
+    plt.savefig(f"grafici_DBSCAN/parametri_dbscan_{config}.png", bbox_inches='tight')
     plt.show()
 
 def get_metrics(eps, min_samples, dataset, iter_):
-    # Fitting ======================================================================
     dbscan_model_ = DBSCAN(eps=eps, min_samples=min_samples)
     dbscan_model_.fit(dataset)
 
-    # Mean Noise Point Distance metric =============================================
     noise_indices = dbscan_model_.labels_ == -1
 
     if True in noise_indices:
@@ -90,32 +87,34 @@ def get_metrics(eps, min_samples, dataset, iter_):
 
     return noise_mean_distance, number_of_clusters
 
-file = 'heart.csv'
+# Carica il dataset
+file = 'heart_new.csv'
 dataset = pd.read_csv(file)
-dataset = dataset.iloc[:, 1:]
 
-# Aggiorna la colonna target se necessario
-labels = dataset["output"].values
-dataset = dataset.drop("output", axis=1)
+# Prepara il target
+labels = dataset["output"].values  # Salva la colonna di output
+dataset = dataset.drop("output", axis=1)  # Rimuovi la colonna di output dal dataset
 
-# Normalizzazione
+# Scegli solo alcune features per DBSCAN
+features_to_use = ['age', 'thalach']  # Scegli due features
+dataset = dataset[features_to_use]  # Mantieni solo le features selezionate
+
 scaler = StandardScaler()
 scaled_array = scaler.fit_transform(dataset)
 data_scaled = pd.DataFrame(scaled_array, columns=dataset.columns)
 
-# Utilizza il metodo dell'elbow per determinare un buon valore di eps
+# Metodo dell'elbow per determinare il valore di eps
 n = 5
 x, eps = elbow_method(data_scaled, n, config='data_scaled')
 print("eps=" + str(eps))
 
-# Testa con valori diversi di eps e min_samples
+# Testa diversi valori di eps e min_samples
 select_parameter(eps, data_scaled, config='data_scaled')
 
-# Utilizza i migliori parametri trovati per l'algoritmo DBSCAN
+# Usa i parametri migliori per DBSCAN
 min_points = 15
-db = DBSCAN(eps=eps, min_samples=min_points).fit(data_scaled)
-
-ymeans = db.labels_
+db = DBSCAN(eps=eps, min_samples=min_points)
+ymeans = db.fit_predict(data_scaled)
 
 # Calcola metriche
 n_clusters_ = len(set(ymeans)) - (1 if -1 in ymeans else 0)
@@ -160,3 +159,26 @@ print(f"Davies Bouldin Score: {m_bouldin:.3f}")
 print(f"Silhouette Coefficient: {silhouette:.3f}")
 print(f"Estimated number of clusters: {n_clusters_}")
 print(f"Estimated number of noise points: {n_noise_}")
+
+# Visualizza i risultati DBSCAN
+pca = PCA(n_components=2)
+data_2d = pca.fit_transform(data_scaled)
+
+plt.figure(figsize=(10, 7))
+unique_labels = set(ymeans)
+colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
+
+for k, col in zip(unique_labels, colors):
+    if k == -1:
+        col = "k"  # Nero per il rumore
+
+    class_member_mask = (ymeans == k)
+    xy = data_2d[class_member_mask]
+    plt.scatter(xy[:, 0], xy[:, 1], c=[col], label=f'Cluster {k}', s=30, edgecolor="k")
+
+plt.title("Risultato di clustering DBSCAN (ridotto a 2D)")
+plt.xlabel("PCA Dimension 1")
+plt.ylabel("PCA Dimension 2")
+plt.legend()
+plt.savefig("grafici_DBSCAN/risultato_dbscan.png", bbox_inches='tight')
+plt.show()
