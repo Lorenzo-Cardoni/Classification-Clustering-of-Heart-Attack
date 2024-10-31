@@ -112,8 +112,8 @@ print("eps=" + str(eps))
 select_parameter(eps, data_scaled, config='data_scaled')
 
 # Usa i parametri migliori per DBSCAN
-min_points = 15
-db = DBSCAN(eps=eps, min_samples=min_points)
+min_samples = 10 # li ottengo guardando la heatmap per l'esp che ottengo da elbow_method
+db = DBSCAN(eps=eps, min_samples=min_samples)
 ymeans = db.fit_predict(data_scaled)
 
 # Calcola metriche
