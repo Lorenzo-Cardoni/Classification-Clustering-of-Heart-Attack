@@ -6,6 +6,7 @@ from sklearn import metrics
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.neighbors import NearestNeighbors
+from sklearn.decomposition import PCA
 from kneed import KneeLocator
 
 def elbow_method(dataset, n_knn, config):
@@ -23,15 +24,15 @@ def elbow_method(dataset, n_knn, config):
     # Grafico del Knee Point con linee tratteggiate verticale e orizzontale
     plt.figure(figsize=(9, 6))
     plt.plot(range(1, len(distances) + 1), distances, 'b-', label="data")
-    plt.axvline(x=elbow_x, color='cyan', linestyle='--', label="knee/elbow")
-    plt.axhline(y=elbow_y, color='red', linestyle='--', label=f'eps={elbow_y:.2f}')
+    plt.axvline(x=elbow_x, color='cyan', linestyle='--', label="knee/elbow")  # Linea verticale
+    plt.axhline(y=elbow_y, color='red', linestyle='--', label=f'eps={elbow_y:.2f}')  # Linea orizzontale
 
     # Titoli e legenda
     plt.title("Knee Point")
     plt.xlabel("Index")
     plt.ylabel("Distance")
     plt.legend()
-    plt.savefig(f"grafici_DBSCAN/elbow_dbscan_{config}.png", bbox_inches='tight')
+    plt.savefig(f"grafici_DBSCAN/elbow_dbscan_{config}_con_PCA.png", bbox_inches='tight')
     plt.show()
 
     return elbow_x, elbow_y
@@ -76,7 +77,7 @@ def select_parameter(eps, dataset, config):
     ax2.set_ylabel("EPSILON")
 
     plt.tight_layout()
-    plt.savefig(f"grafici_DBSCAN/parametri_dbscan_{config}.png", bbox_inches='tight')
+    plt.savefig(f"grafici_DBSCAN/parametri_dbscan_{config}_con_PCA.png", bbox_inches='tight')
     plt.show()
 
 def get_metrics(eps, min_samples, dataset, iter_):
@@ -108,13 +109,13 @@ dataset = pd.read_csv(file)
 labels = dataset["output"].values  # Salva la colonna di output
 dataset = dataset.drop("output", axis=1)  # Rimuovi la colonna di output dal dataset
 
-# Scegli solo alcune features per DBSCAN
-features_to_use = ['age', 'thalach']
-dataset = dataset[features_to_use]
-
 scaler = StandardScaler()
 scaled_array = scaler.fit_transform(dataset)
 data_scaled = pd.DataFrame(scaled_array, columns=dataset.columns)
+
+# Visualizza i risultati DBSCAN usando la PCA
+pca = PCA(n_components=2)
+data_scaled = pca.fit_transform(data_scaled)
 
 # Metodo dell'elbow per determinare il valore di eps
 n = 5
@@ -124,8 +125,11 @@ print("eps=" + str(eps))
 # Testa diversi valori di eps e min_samples
 select_parameter(eps, data_scaled, config='data_scaled')
 
+pca = PCA(n_components=2)
+data_2d = pca.fit_transform(data_scaled)
+
 # Usa i parametri migliori per DBSCAN
-min_samples = 10  # Adatta in base alla heatmap
+min_samples = 10 # li ottengo guardando la heatmap per l'esp che ottengo da elbow_method
 db = DBSCAN(eps=eps, min_samples=min_samples)
 ymeans = db.fit_predict(data_scaled)
 
@@ -173,7 +177,10 @@ print(f"Silhouette Coefficient: {silhouette:.3f}")
 print(f"Estimated number of clusters: {n_clusters_}")
 print(f"Estimated number of noise points: {n_noise_}")
 
-# Visualizza i risultati DBSCAN
+# Visualizza i risultati DBSCAN usando la PCA
+pca = PCA(n_components=2)
+data_2d = pca.fit_transform(data_scaled)
+
 plt.figure(figsize=(10, 7))
 unique_labels = set(ymeans)
 colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
@@ -183,12 +190,15 @@ for k, col in zip(unique_labels, colors):
         col = "k"  # Nero per il rumore
 
     class_member_mask = (ymeans == k)
-    xy = data_scaled[class_member_mask]
-    plt.scatter(xy.iloc[:, 0], xy.iloc[:, 1], c=[col], label=f'Cluster {k}', s=30, edgecolor="k")
+    xy = data_2d[class_member_mask]
+    plt.scatter(xy[:, 0], xy[:, 1], c=[col], label=f'Cluster {k}', s=30, edgecolor="k")
 
-plt.title("Risultato di clustering DBSCAN")
-plt.xlabel(features_to_use[0])
-plt.ylabel(features_to_use[1])
+plt.title("Risultato di clustering DBSCAN usando dati post PCA2")
+plt.xlabel("PCA Dimension 1")
+plt.ylabel("PCA Dimension 2")
 plt.legend()
-plt.savefig("grafici_DBSCAN/risultato_dbscan.png", bbox_inches='tight')
+plt.savefig("grafici_DBSCAN/risultato_dbscan_con_PCA.png", bbox_inches='tight')
 plt.show()
+
+
+print("questo codice usa DBSCAN con i dati post PCA2 e la visualizzazione con PCA2")

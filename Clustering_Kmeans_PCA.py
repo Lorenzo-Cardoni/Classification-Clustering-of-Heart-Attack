@@ -155,24 +155,24 @@ print("Valore ottimale di k scelto:", best_k)
 print(80 * "_")
 print("init\t\ttime\tinertia\thomo\tcompl\tv-meas\tARI   \tAMI   \tsilhouette")
 
-# Benchmarking K-means con inizializzazione 'k-means++'
+# Benchmarking K-means con inizializzazione 'k-means++' in cui uso il dataset originale
 kmeans = KMeans(init="k-means++", n_clusters=best_k, n_init=10, random_state=0)
 bench_k_means(kmeans=kmeans, name="k-means++", data=data, labels=labels)
 
-# Benchmarking K-means con inizializzazione 'random'
+# Benchmarking K-means con inizializzazione 'random' in cui uso il dataset originale
 kmeans = KMeans(init="random", n_clusters=best_k, n_init=10, random_state=0)
 bench_k_means(kmeans=kmeans, name="random", data=data, labels=labels)
 
-# Riduzione della dimensionalità con PCA
+# Riduzione della dimensionalità del dataset con PCA e Benchmarking K-means col dataset POST PCA
 pca = PCA(n_components=2).fit_transform(data)
 kmeans = KMeans(init='k-means++', n_clusters=best_k, n_init='auto', random_state=0)
 bench_k_means(kmeans=kmeans, name="PCA2-based", data=pca, labels=labels)
 
 # Visualizzazione dei risultati della riduzione di dimensionalità e clustering
 pca = PCA(n_components=2)
-pca_x = pca.fit_transform(data)
+pca_x = pca.fit_transform(data) # effettuo la PCA a 2 comp sul dataset
 data_reduced = pd.DataFrame(pca_x).values
-kmeans = KMeans(init="k-means++", n_clusters=best_k, n_init='auto', random_state=0)
+kmeans = KMeans(init="k-means++", n_clusters=best_k, n_init='auto', random_state=0) # applico K-means su dataset POST PCA
 labels = kmeans.fit(data_reduced)
 
 labels = kmeans.predict(data_reduced).tolist()
@@ -182,7 +182,6 @@ initial_data["cluster"] = labels
 
 # Salvataggio del DataFrame con i risultati in un file CSV
 initial_data.to_csv("clustering_Kmeans_PCA_results.csv", index=False)
-
 
 # Impostazione dei limiti e delle dimensioni della griglia per la visualizzazione
 h = 0.02
@@ -210,4 +209,5 @@ plt.savefig('grafici_clustering/kmeans_PCA.png', bbox_inches='tight')
 plt.show()
 
 # Esecuzione dell'analisi silhouette per visualizzare come si distribuiscono i cluster
+# Analisi silhouette viene eseguita sui dati ridotti post PCA
 silhouette_analysis(best_k, data_reduced)
