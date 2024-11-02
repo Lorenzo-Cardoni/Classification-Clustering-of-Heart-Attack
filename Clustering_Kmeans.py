@@ -157,3 +157,93 @@ plt.savefig('grafici_clustering/kmeans.png', bbox_inches='tight')
 plt.show()
 
 silhouette_analysis(best_k, data.values, selected_columns)
+
+labels = kmeans.fit(data)
+
+labels = kmeans.predict(data).tolist()
+
+# Aggiunta delle etichette al DataFrame originale
+data["Cluster"] = labels
+
+# Salvataggio del DataFrame con i risultati in un file CSV
+data.to_csv("clustering_Kmeans_results.csv", index=False)
+
+import seaborn as sns
+
+# Definire una palette di colori fissa per i cluster
+colors = sns.color_palette('Set2', n_colors=3)  # Cambia 3 con il numero di cluster che stai utilizzando
+
+# Funzione per plottare la numerosità dei cluster
+def plot_cluster_distribution(labels):
+    plt.figure(figsize=(8, 5))
+    sns.countplot(x=labels, palette=colors)
+    plt.title('Number of Samples in Each Cluster')
+    plt.xlabel('Cluster')
+    plt.ylabel('Number of Samples')
+    plt.xticks(ticks=range(len(np.unique(labels))), labels=[f'Cluster {i}' for i in range(len(np.unique(labels)))])
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/cluster_distribution.png', bbox_inches='tight')
+    plt.show()
+
+# Funzione per plottare età e frequenza cardiaca massima
+def plot_age_vs_thalach(original_data, labels):
+    plt.figure(figsize=(10, 6))
+    sns.scatterplot(x=original_data['age'], y=original_data['thalach'], hue=labels, palette=colors, alpha=0.6)
+    plt.title('Age vs. Maximum Heart Rate')
+    plt.xlabel('Age')
+    plt.ylabel('Maximum Heart Rate (thalach)')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/age_vs_thalach.png', bbox_inches='tight')
+    plt.show()
+
+# Funzione per plottare la distribuzione del sesso per cluster
+def plot_gender_distribution(original_data, labels):
+    original_data['Cluster'] = labels
+    original_data['sex'] = original_data['sex'].map({0: 'Femminile', 1: 'Maschile'})
+
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=original_data, x='Cluster', hue='sex', palette=colors)
+    plt.title('Gender Distribution Across Clusters')
+    plt.xlabel('Cluster')
+    plt.ylabel('Count')
+    plt.legend(title='Sex')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/gender_distribution.png', bbox_inches='tight')
+    plt.show()
+
+# Funzione per plottare la distribuzione del colesterolo per cluster
+def plot_chol_distribution(original_data, labels):
+    original_data['Cluster'] = labels
+    
+    plt.figure(figsize=(12, 6))
+    
+    for cluster in np.unique(labels):
+        sns.histplot(original_data[original_data['Cluster'] == cluster]['chol'], 
+                     bins=15, color=colors[cluster], alpha=0.6, 
+                     label=f'Cluster {cluster}', kde=True)
+
+    plt.title('Cholesterol Level Distribution Across Clusters')
+    plt.xlabel('Cholesterol Level')
+    plt.ylabel('Frequency')
+    plt.legend(title='Cluster')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/chol_distribution_histogram.png', bbox_inches='tight')
+    plt.show()
+
+# Funzione per plottare la distribuzione del tipo di dolore toracico per cluster
+def plot_cp_distribution(original_data, labels):
+    original_data['Cluster'] = labels
+
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=original_data, x='Cluster', hue='cp', palette=colors)
+    plt.title('Chest Pain Type Distribution Across Clusters')
+    plt.xlabel('Cluster')
+    plt.ylabel('Count')
+    plt.legend(title='Chest Pain Type')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/cp_distribution.png', bbox_inches='tight')
+    plt.show()
+
+# Chiamata delle funzioni di visualizzazione
+original_data = pd.read_csv("heart_new.csv")  # Assicurati di avere i dati originali
+
+plot_cluster_distribution(kmeans.labels_)
+plot_age_vs_thalach(original_data, kmeans.labels_)
+plot_gender_distribution(original_data, kmeans.labels_)
+plot_chol_distribution(original_data, kmeans.labels_)
+plot_cp_distribution(original_data, kmeans.labels_)

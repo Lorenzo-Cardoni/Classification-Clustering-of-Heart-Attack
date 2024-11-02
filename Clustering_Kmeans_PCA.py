@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import seaborn as sns
+import plotly.graph_objects as go
 
 from yellowbrick.cluster import KElbowVisualizer
 from sklearn.cluster import KMeans
@@ -178,7 +180,7 @@ labels = kmeans.fit(data_reduced)
 labels = kmeans.predict(data_reduced).tolist()
 
 # Aggiunta delle etichette al DataFrame originale
-initial_data["cluster"] = labels
+initial_data["Cluster"] = labels
 
 # Salvataggio del DataFrame con i risultati in un file CSV
 initial_data.to_csv("clustering_Kmeans_PCA_results.csv", index=False)
@@ -211,3 +213,57 @@ plt.show()
 # Esecuzione dell'analisi silhouette per visualizzare come si distribuiscono i cluster
 # Analisi silhouette viene eseguita sui dati ridotti post PCA
 silhouette_analysis(best_k, data_reduced)
+
+# Analisi Cluster ottenuti con K-Means
+
+# Colori per i cluster
+palette = sns.color_palette("Set1", np.unique(labels).max() + 1)
+
+# 1. Grafico PCA in 2D
+plt.figure(figsize=(10, 6))
+for cluster in np.unique(labels):
+    plt.scatter(data_reduced[labels == cluster, 0], data_reduced[labels == cluster, 1], 
+                label=f'Cluster {cluster}', color=palette[cluster])
+plt.xlabel('PC1')
+plt.ylabel('PC2')
+plt.title('Cluster su PCA 2D')
+plt.legend()
+plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/cluster_PCA_2D.png')
+plt.close()
+
+# 2. Grafici a dispersione per coppie di feature
+feature_pairs = [('age', 'thalach'), ('trtbps', 'chol'), ('oldpeak', 'slp')]
+for x_feat, y_feat in feature_pairs:
+    plt.figure(figsize=(8, 5))
+    sns.scatterplot(data=initial_data, x=x_feat, y=y_feat, hue='Cluster', palette=palette, s=60)
+    plt.title(f'{x_feat} vs {y_feat}')
+    plt.legend(title='Cluster')
+    plt.savefig(f'grafici_clustering/analisi_cluster_kmeans_pca/{x_feat}_vs_{y_feat}.png')
+    plt.close()
+
+# 3. Grafico a barre per la media delle feature per cluster
+cluster_means = initial_data.groupby('Cluster').mean()
+cluster_means.T.plot(kind='bar', figsize=(12, 8), colormap='Set1', legend=True)
+plt.title('Media delle feature per Cluster')
+plt.ylabel('Media Normalizzata')
+plt.xticks(rotation=45)
+plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/media_feature_per_cluster.png')
+plt.close()
+
+# 4. Boxplot delle feature per cluster
+plt.figure(figsize=(12, 8))
+sns.boxplot(data=initial_data, orient='h', palette="Set2")
+plt.title('Distribuzione delle feature per Cluster')
+plt.xlabel('Valore delle Feature')
+plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/distribuzione_feature_per_cluster.png')
+plt.close()
+
+# 5. Distribuzione delle frequenze per feature categoriali
+categorical_features = ['sex', 'cp', 'restecg', 'exang', 'slp', 'thall']
+for feature in categorical_features:
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=initial_data, x=feature, hue='Cluster', palette=palette)
+    plt.title(f'Distribuzione di {feature} per cluster')
+    plt.legend(title='Cluster')
+    plt.savefig(f'grafici_clustering/analisi_cluster_kmeans_pca/distribuzione_{feature}_per_cluster.png')
+    plt.close()
