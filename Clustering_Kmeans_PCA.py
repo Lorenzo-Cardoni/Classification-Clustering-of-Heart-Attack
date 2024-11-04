@@ -216,7 +216,7 @@ silhouette_analysis(best_k, data_reduced)
 
 # Analisi Cluster ottenuti con K-Means
 
-# Colori per i cluster
+# Colori per i cluster, usando la stessa palette per tutti i grafici
 palette = sns.color_palette("Set1", np.unique(labels).max() + 1)
 
 # 1. Grafico PCA in 2D
@@ -231,7 +231,7 @@ plt.legend()
 plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/cluster_PCA_2D.png')
 plt.close()
 
-# 2. Grafici a dispersione per coppie di feature
+# 2. Grafici a dispersione per coppie di feature principali
 feature_pairs = [('age', 'thalach'), ('trtbps', 'chol'), ('oldpeak', 'slp')]
 for x_feat, y_feat in feature_pairs:
     plt.figure(figsize=(8, 5))
@@ -251,7 +251,7 @@ plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/media_feature_per_clu
 plt.close()
 
 # 4. Boxplot delle feature per cluster
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(14, 10))
 sns.boxplot(data=initial_data, orient='h', palette="Set2")
 plt.title('Distribuzione delle feature per Cluster')
 plt.xlabel('Valore delle Feature')
@@ -259,11 +259,26 @@ plt.savefig('grafici_clustering/analisi_cluster_kmeans_pca/distribuzione_feature
 plt.close()
 
 # 5. Distribuzione delle frequenze per feature categoriali
-categorical_features = ['sex', 'cp', 'restecg', 'exang', 'slp', 'thall']
+categorical_features = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slp', 'caa', 'thall']
 for feature in categorical_features:
     plt.figure(figsize=(10, 6))
     sns.countplot(data=initial_data, x=feature, hue='Cluster', palette=palette)
-    plt.title(f'Distribuzione di {feature} per cluster')
+    plt.title(f'Distribuzione di {feature} per Cluster')
+    plt.legend(title='Cluster')
+    plt.savefig(f'grafici_clustering/analisi_cluster_kmeans_pca/distribuzione_{feature}_per_cluster.png')
+    plt.close()
+
+# 6. Istogrammi delle distribuzioni per le feature continue per ciascun cluster
+continuous_features = ['age', 'trtbps', 'chol', 'thalach', 'oldpeak']
+for feature in continuous_features:
+    plt.figure(figsize=(12, 6))
+    for cluster in np.unique(labels):
+        sns.histplot(initial_data[initial_data['Cluster'] == cluster][feature], 
+                     bins=15, color=palette[cluster], alpha=0.6, 
+                     label=f'Cluster {cluster}', kde=True)
+    plt.title(f'Distribuzione di {feature} per Cluster')
+    plt.xlabel(feature)
+    plt.ylabel('Frequenza')
     plt.legend(title='Cluster')
     plt.savefig(f'grafici_clustering/analisi_cluster_kmeans_pca/distribuzione_{feature}_per_cluster.png')
     plt.close()

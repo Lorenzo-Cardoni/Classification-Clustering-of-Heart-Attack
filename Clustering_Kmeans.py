@@ -170,6 +170,23 @@ data.to_csv("clustering_Kmeans_results.csv", index=False)
 
 import seaborn as sns
 
+
+palette = sns.color_palette("Set1", np.unique(labels).max() + 1)
+
+# 1. Grafico PCA in 2D
+plt.figure(figsize=(10, 6))
+for cluster in np.unique(labels):
+    # Usa .iloc per indicizzare correttamente le colonne
+    plt.scatter(data.iloc[labels == cluster, 0], data.iloc[labels == cluster, 1], 
+                label=f'Cluster {cluster}', color=palette[cluster])
+
+plt.xlabel('age')
+plt.ylabel('thalach')
+plt.title('Cluster su PCA 2D')
+plt.legend()
+plt.savefig('grafici_clustering/analisi_cluster_kmeans/cluster_PCA_2D.png')
+plt.close()
+
 # Definire una palette di colori fissa per i cluster
 colors = sns.color_palette('Set2', n_colors=3)  # Cambia 3 con il numero di cluster che stai utilizzando
 
@@ -239,6 +256,42 @@ def plot_cp_distribution(original_data, labels):
     plt.savefig('grafici_clustering/analisi_cluster_kmeans/cp_distribution.png', bbox_inches='tight')
     plt.show()
 
+# Funzione per plottare la distribuzione della pressione sanguigna a riposo (trtbps) per cluster
+def plot_trtbps_distribution(original_data, labels):
+    original_data['Cluster'] = labels
+
+    plt.figure(figsize=(12, 6))
+    for cluster in np.unique(labels):
+        sns.histplot(original_data[original_data['Cluster'] == cluster]['trtbps'],
+                     bins=15, color=colors[cluster], alpha=0.6,
+                     label=f'Cluster {cluster}', kde=True)
+    
+    plt.title('Resting Blood Pressure (trtbps) Distribution Across Clusters')
+    plt.xlabel('Resting Blood Pressure (trtbps)')
+    plt.ylabel('Frequency')
+    plt.legend(title='Cluster')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/trtbps_distribution_histogram.png', bbox_inches='tight')
+    plt.show()
+
+
+# Funzione per plottare la distribuzione della frequenza cardiaca massima (thalach) per cluster
+def plot_thalach_distribution(original_data, labels):
+    original_data['Cluster'] = labels
+
+    plt.figure(figsize=(12, 6))
+    for cluster in np.unique(labels):
+        sns.histplot(original_data[original_data['Cluster'] == cluster]['thalach'],
+                     bins=15, color=colors[cluster], alpha=0.6,
+                     label=f'Cluster {cluster}', kde=True)
+    
+    plt.title('Maximum Heart Rate (thalach) Distribution Across Clusters')
+    plt.xlabel('Maximum Heart Rate (thalach)')
+    plt.ylabel('Frequency')
+    plt.legend(title='Cluster')
+    plt.savefig('grafici_clustering/analisi_cluster_kmeans/thalach_distribution_histogram.png', bbox_inches='tight')
+    plt.show()
+
+
 # Chiamata delle funzioni di visualizzazione
 original_data = pd.read_csv("heart_new.csv")  # Assicurati di avere i dati originali
 
@@ -247,3 +300,5 @@ plot_age_vs_thalach(original_data, kmeans.labels_)
 plot_gender_distribution(original_data, kmeans.labels_)
 plot_chol_distribution(original_data, kmeans.labels_)
 plot_cp_distribution(original_data, kmeans.labels_)
+plot_trtbps_distribution(original_data, kmeans.labels_)
+plot_thalach_distribution(original_data, kmeans.labels_)
