@@ -6,7 +6,8 @@ Questa repository è relativa all'uso di alcune librerie per la creazione di mod
 - Dipendenze Python: pandas, numpy, sklearn, xgboost, seaborn, kneed, yellowbrick, pywaffle
 
 # Il dataset
-Questo dataset è utilizzato per analizzare i fattori di rischio associati agli attacchi cardiaci e per costruire modelli predittivi di supporto clinico. Contiene variabili demografiche e cliniche relative ai pazienti, come:
+Questo dataset [Heart Attack Analysis & Prediction](https://www.kaggle.com/datasets/rashikrahmanpritom/heart-attack-analysis-prediction-dataset/data)
+ è utilizzato per analizzare i fattori di rischio associati agli attacchi cardiaci e per costruire modelli predittivi di supporto clinico. Contiene variabili demografiche e cliniche relative ai pazienti, come:
 
 - age: Età del paziente
 - sex: Sesso (1 = maschio, 0 = femmina)
