@@ -1,4 +1,4 @@
-# Classification-Clustering-of-Disease-Symptom-Prediction
+# Classification-Clustering-of-Heart-Attack-Prediction
 Questa repository è relativa all'uso di alcune librerie per la creazione di modelli di classificazione e clustering.
 
 # Requisiti
