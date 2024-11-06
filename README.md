@@ -46,3 +46,4 @@ I modelli addestrati per il clustering sono:
 - Clustering Gerarchico
 
 usando diverse configurazioni di parametri. Per determinare il miglior valore di k per il K-means e per scegliere l'eps per il DBSCAN si è usato il metodo del gomito. Le prestazioni sono state valutate attraverso diverse metriche, tra cui la silhouette, la V-measure, l'omogeneità...
+Inoltre, è stata applicata anche la PCA al dataset e poi sono stati riaddestrati i modelli K-Means e DBSCAN 
