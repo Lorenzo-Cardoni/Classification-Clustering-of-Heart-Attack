@@ -34,6 +34,37 @@ def save_confusion_matrix(y_test, y_pred, file_name, title):
     plt.ylabel('True Labels')
     plt.savefig('confusion_matrix_gridsearch/' + file_name, bbox_inches='tight')
     plt.show()
+# Learning Cruve
+def save_learning_curve(model):
+    train_sizes, train_scores, test_scores = learning_curve(model, X_train, y_train, cv=5, n_jobs=-1, train_sizes=np.linspace(0.1, 1.0, 10), random_state=42)
+
+    # Calcolare la media e la deviazione standard per le curve di apprendimento
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+
+    # Plot della curva di apprendimento
+    plt.figure()
+    model_name = model.__class__.__name__  # Ottiene solo il nome della classe del modello
+    plt.title(f"Learning Curve - {model_name}")
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+
+    plt.legend(loc="best")
+    plt.savefig(f'plots_gridsearch/LearningCurve_{model_name}.png')
+    plt.close()
 
 
 # Classificatori 
@@ -51,6 +82,7 @@ def decision_tree():
     save_confusion_matrix(y_test, y_pred_dt, 'DecisionTree.png', 'Decision Tree Classifier')
     dt_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     proba_dt = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    save_learning_curve(decision_tree)
     return y_pred_dt, dt_dict, best_params_dt, proba_dt
 
 def random_forest():
@@ -69,6 +101,7 @@ def random_forest():
     save_confusion_matrix(y_test, y_pred_rf, 'RandomForest.png', 'Random Forest Classifier')
     rf_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     proba_rf = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    save_learning_curve(random_forest)
     return y_pred_rf, rf_dict, best_params_rf, proba_rf
 
 def svc():
@@ -124,6 +157,7 @@ def xgboost():
     save_confusion_matrix(y_test, y_pred_xgb, 'XGBoost.png', 'XGBoost Classifier')
     xg_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_)) 
     proba_xgb = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    save_learning_curve(xgboost)
     return y_pred_xgb, xg_dict, best_params_xgb, proba_xgb
 
 def adaboost():
@@ -139,6 +173,7 @@ def adaboost():
     save_confusion_matrix(y_test, y_pred_ab, 'AdaBoost.png', 'AdaBoost Classifier')
     ab_dict = dict(zip(X_train.columns, grid_search.best_estimator_.feature_importances_))
     proba_ab = grid_search.best_estimator_.predict_proba(X_test)[:, 1]
+    save_learning_curve(adaboost)
     return y_pred_ab, ab_dict, best_params_ab, proba_ab
 
 def gradient_boosting():

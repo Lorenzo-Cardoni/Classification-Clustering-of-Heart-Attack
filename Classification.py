@@ -283,3 +283,31 @@ def plot_all_roc_curves():
 
 # Esegui il plot delle curve ROC
 plot_all_roc_curves()
+
+# Esegui i classificatori e ottieni le predizioni
+predictions = {
+    "Decision Tree": y_pred_dt,
+    "Random Forest": y_pred_rf,
+    "SVC": y_pred_svc,
+    "Logistic Regression": y_pred_lr,
+    "XGBoost": y_pred_xgb,
+    "AdaBoost": y_pred_ab,
+    "Gradient Boosting": y_pred_gb,
+    "Linear Discriminant": y_pred_ld
+}
+
+# Calcola l'accuratezza di ciascun modello
+accuracies = {name: accuracy_score(y_test, pred) for name, pred in predictions.items()}
+
+# Crea un DataFrame per le predizioni
+pred_df = pd.DataFrame(predictions)
+
+# Calcola la matrice di correlazione tra le predizioni dei vari modelli
+correlation_matrix = pred_df.corr()
+
+# Plot della heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", vmin=0.5, vmax=1, fmt=".2f")
+plt.title("Correlazione tra i Modelli - Predizioni")
+plt.savefig('plots/heatmap.png', bbox_inches='tight')
+plt.show()

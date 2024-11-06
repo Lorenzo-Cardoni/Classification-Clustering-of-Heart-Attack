@@ -30,8 +30,8 @@ images = [Image.open(img_file) for img_file in image_files]
 widths, heights = zip(*(i.size for i in images))
 
 # Calcola la dimensione totale della figura
-total_width = max(widths) * 4  # 4 colonne
-max_height = max(heights) * 2  # 2 righe
+total_width = max(widths) * 2  # 4 colonne
+max_height = max(heights) * 4  # 2 righe
 
 # Crea una nuova immagine bianca con le dimensioni calcolate
 new_image = Image.new('RGB', (total_width, max_height), (255, 255, 255))
@@ -42,7 +42,7 @@ y_offset = 0
 for i, img in enumerate(images):
     new_image.paste(img, (x_offset, y_offset))
     x_offset += img.width
-    if (i + 1) % 4 == 0:  # Se siamo alla fine di una riga
+    if (i + 1) % 2 == 0:  # Se siamo alla fine di una riga
         x_offset = 0
         y_offset += img.height
 
